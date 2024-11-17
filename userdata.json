@@ -1,0 +1,34 @@
+{
+    "p": {
+        "password": "p",
+        "predictionData": {
+            "rock": 28,
+            "paper": 23,
+            "sissors": 29
+        }
+    },
+    "pp": {
+        "password": "pp",
+        "predictionData": {
+            "rock": 21,
+            "paper": 32,
+            "sissors": 23
+        }
+    },
+    "test": {
+        "password": "test",
+        "predictionData": {
+            "rock": 19,
+            "paper": 13,
+            "sissors": 19
+        }
+    },
+    "t": {
+        "password": "t",
+        "predictionData": {
+            "rock": 31,
+            "paper": 21,
+            "sissors": 19
+        }
+    }
+}

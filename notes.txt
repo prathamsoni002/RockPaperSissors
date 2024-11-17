@@ -1,0 +1,2 @@
+What to do:
+1. Update the recognition logic. Add the distance between the thumb and other parts as well (top of thumb and other parts) (center of the thumb and other parts)

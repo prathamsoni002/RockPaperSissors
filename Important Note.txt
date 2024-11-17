@@ -1,0 +1,190 @@
+The issue you're encountering is related to mutability in Python. Specifically, dictionaries in Python are mutable, and if you pass a dictionary to another function or object, any changes made to that dictionary are reflected everywhere because both references point to the same object.
+
+Explanation
+In userInteraction.py:
+
+When you call test.play() in main(), you return userName and predictionData.
+python
+Copy code
+userName, predictionData = obj.play()
+Here, predictionData is a reference to the dictionary stored in self.users[userName]["predictionData"]. It is not a copy of the dictionary; it points to the same object in memory.
+
+In gameplay.py:
+
+When you create the Game object with game = Game(predictionData), the predictionData dictionary is passed to the Game class's __init__ method and assigned to self.data.
+python
+Copy code
+def __init__(self, data) -> None:
+    self.data = data
+Here, self.data in the Game class is just another reference to the same dictionary object in memory.
+
+During the game:
+
+When you update self.data in the winnerIs() method:
+python
+Copy code
+self.data[Game.rule[player]] += 1
+You are modifying the original predictionData dictionary because self.data and predictionData point to the same object in memory.
+
+Why is this happening?
+This is the behavior of mutable objects in Python (like dictionaries). When you assign or pass a mutable object, you are only passing the reference, not creating a copy. Therefore, any modifications to self.data directly affect self.users[userName]["predictionData"].
+
+How to Fix It
+If you want to avoid updating the original dictionary, you can create a deep copy of the dictionary when you pass it to the Game class. Use Python's copy module for this:
+
+Solution
+Import copy in gameplay.py:
+
+python
+Copy code
+import copy
+Change the initialization of self.data in the Game class:
+
+python
+Copy code
+def __init__(self, data) -> None:
+    self.data = copy.deepcopy(data)
+Result
+Now, self.data is a deep copy of predictionData, and modifications to self.data will not affect the original predictionData in UserInterface.
+
+This should resolve the issue where predictionData was getting updated automatically.
+
+
+
+
+
+
+
+You said:
+so if it is happening with dictionaries, what are other data structures where it happens the same behaviour?
+ChatGPT said:
+ChatGPT
+In Python, the behavior you're experiencing is due to mutability. Mutable objects can be changed in place, and when you pass them to a function or assign them to another variable, only the reference is passed. This means changes to the object will be visible everywhere that reference is used.
+
+1. Mutable Data Structures:
+The following data structures are mutable in Python:
+
+Lists
+Dictionaries
+Sets
+Custom objects (instances of user-defined classes)
+When you pass or assign these objects, you are passing a reference to the original object. Modifying the object through one reference affects all references pointing to the same object.
+
+Example with List:
+python
+Copy code
+def modify_list(lst):
+    lst.append(4)
+
+my_list = [1, 2, 3]
+modify_list(my_list)
+print(my_list)  # Output: [1, 2, 3, 4]
+Here, my_list is modified inside modify_list() because the list is mutable.
+
+Example with Set:
+python
+Copy code
+def modify_set(s):
+    s.add(100)
+
+my_set = {1, 2, 3}
+modify_set(my_set)
+print(my_set)  # Output: {1, 2, 3, 100}
+The set my_set is updated in place.
+
+2. Immutable Data Structures:
+The following data structures are immutable in Python:
+
+Integers
+Floats
+Strings
+Tuples
+Booleans
+Frozen sets
+When you pass these objects, you cannot change them in place. Any operation that "modifies" them actually creates a new object.
+
+Example with Integer:
+python
+Copy code
+def modify_int(x):
+    x += 1
+
+n = 5
+modify_int(n)
+print(n)  # Output: 5
+Here, n remains unchanged because integers are immutable.
+
+Example with String:
+python
+Copy code
+def modify_string(s):
+    s += " World"
+
+text = "Hello"
+modify_string(text)
+print(text)  # Output: "Hello"
+The string text is unchanged because strings are immutable.
+
+3. Tuples with Mutable Elements:
+Tuples themselves are immutable, but if they contain mutable elements like lists or dictionaries, those mutable elements can still be modified.
+
+Example:
+python
+Copy code
+my_tuple = ([1, 2], 3)
+
+# Modifying the list inside the tuple
+my_tuple[0].append(3)
+print(my_tuple)  # Output: ([1, 2, 3], 3)
+Here, the tuple's list element is mutable and can be modified, even though the tuple itself is immutable.
+
+4. Custom Objects:
+Instances of user-defined classes are mutable by default unless specifically designed to be immutable.
+
+Example:
+python
+Copy code
+class MyClass:
+    def __init__(self, data):
+        self.data = data
+
+obj1 = MyClass([1, 2, 3])
+obj2 = obj1
+
+obj2.data.append(4)
+print(obj1.data)  # Output: [1, 2, 3, 4]
+Since obj1 and obj2 refer to the same object, changes through obj2 affect obj1.
+
+How to Avoid Unintentional Mutation:
+Use deep copies (copy.deepcopy()) when passing mutable objects if you want to avoid modifying the original.
+Use immutable data structures like tuples or frozen sets when you don't need to modify the data.
+Be cautious with default mutable arguments in functions (e.g., def func(data=[]) is problematic).
+Let me know if you'd like more details or examples!
+
+
+
+
+
+
+class xyz:
+    def __init__(self, data):
+        self.data = data
+
+    def abc(self):
+        self.data['rock'] += 100
+        return self.data
+
+
+def main():
+    n = {
+        'rock': 1
+        }
+    obj = xyz(n)
+    print(n, obj.abc())
+
+
+main()
+
+
+op:
+{'rock': 101} {'rock': 101}
