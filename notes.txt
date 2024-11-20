@@ -1,2 +1,24 @@
 What to do:
-1. Update the recognition logic. Add the distance between the thumb and other parts as well (top of thumb and other parts) (center of the thumb and other parts)
+Our logic is not working. The essenze of this game id randomness, so go with that as well. Use the original randomness theory.
+
+We will do something like:
+{
+    'loss':{
+        'rock': [[rockINT, paperINT, sissorsINT], countINT],
+        'paper': [[rockINT, paperINT, sissorsINT], countINT],
+        'sissors': [[rockINT, paperINT, sissorsINT], countINT]
+    }
+    'winner':{
+        'rock': [[rockINT, paperINT, sissorsINT], countINT],
+        'paper': [[rockINT, paperINT, sissorsINT], countINT],
+        'sissors': [[rockINT, paperINT, sissorsINT], countINT]
+    }
+    'draw':{
+        'rock': [[rockINT, paperINT, sissorsINT], countINT],
+        'paper': [[rockINT, paperINT, sissorsINT], countINT],
+        'sissors': [[rockINT, paperINT, sissorsINT], countINT]
+    }
+}
+
+
+Old logic could be used to know how will the user will start the game? like we could store all the very first actions of the user and then give out the result. 

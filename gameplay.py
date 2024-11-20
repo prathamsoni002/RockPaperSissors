@@ -13,14 +13,17 @@ class Game:
             'sissors': 'rock'
         }
     
-    rule = {
-            'j': 'rock',
-            'k': 'paper',
-            'l': 'sissors',
-            'J': 'rock',
-            'K': 'paper',
-            'L': 'sissors'
+    logicDisplay = {
+            'rock': rps.displayRock(),
+            'paper': rps.displayPaper(),
+            'sissors': rps.displaySissors()
         }
+    
+    ruleNum = {
+        'rock': 0,
+        'paper': 1,
+        'sissors': 2
+    }
     
     def __init__(self, data) -> None:
         self.data = data
@@ -40,59 +43,120 @@ class Game:
         print("Shoot :::")
 
     def trackScore(self, round, winner):
-        if round != 1:
-            if winner == 'computer':
-                self.computer += 1
-            elif winner == 'player': self.player += 1
-            else: pass # Draw
+        if winner == 'computer':
+            self.computer += 1
+        elif winner == 'player': self.player += 1
+        else: pass # Draw
 
     def printScore(self, computer, player):
         print("Score: \n computer = ", computer, " | Player = ", player)
 
     def computerPlay(self):
-        maxVal = max(self.data.values())
-        probab = [key for key, value in self.data.items() if value == maxVal]
-
-        if len(probab) == 1:
-            if Game.logic[probab[0]] == 'paper':
-                return 'paper', rps.displayPaper()
-            elif Game.logic[probab[0]] == 'rock':
-                return 'rock', rps.displayRock()
+        def maxIndxFun():
+            # This if/else loop is due to we are storing the w/l/d in last result and full form in our json file.
+            if self.lastResult[1] == 'd':
+                winResultTemp = 'draw'
+            elif self.lastResult[1] == 'w':
+                winResultTemp = 'win'
             else:
-                return 'sissors',rps.displaySissors()
-        
-        else:
-            if self.lastResult != [None, None]:
-                if self.lastResult[0] == 'rock':
-                    if self.lastResult[1] == 'w':
-                        return 'paper', rps.displayPaper()
-                    else: 
-                        return 'sissors', rps.displaySissors()
-                elif self.lastResult[0] == 'paper':
-                    if self.lastResult[1] == 'w':
-                        return 'sissors', rps.displaySissors()
-                    else: 
-                        return 'rock', rps.displayRock()
-                else:
-                    if self.lastResult[1] == 'w':
-                        return 'rock', rps.displayRock()
-                    else: 
-                        return 'paper', rps.displayPaper()
+                winResultTemp = 'loss'
+            maxVal = max(self.data[winResultTemp][self.lastResult[0]][0])
+            maxIndex = [index for index, value in enumerate(self.data[winResultTemp][self.lastResult[0]][0]) if value == maxVal]
+            return maxIndex
 
+        if self.lastResult != [None, None]:
+            maxIndex = maxIndxFun()
+            if len(maxIndex) == 1:
+                if maxIndex[0] == 0:
+                    return 'paper', rps.displayPaper()
+                elif maxIndex[0] == 1:
+                    return 'sissors', rps.displaySissors()
+                else:
+                    return 'rock', rps.displayRock()
+
+
+            if self.lastResult[1] == 'w':
+                if self.lastResult[0] == 'rock':
+                    return 'paper', rps.displayPaper()
+                elif self.lastResult[0] == 'paper':
+                    return 'sissors', rps.displaySissors()
+                else:
+                    return 'rock', rps.displayRock()
+            elif self.lastResult[1] == 'l':
+                if self.lastResult[0] == 'rock':
+                    return 'sissors', rps.displaySissors()
+                elif self.lastResult[0] == 'paper':
+                    return 'rock', rps.displayRock()
+                else:
+                    return 'paper', rps.displayPaper()
+            else:
+                if self.lastResult[0] == 'sissors':
+                    return 'sissors', rps.displaySissors()
+                elif self.lastResult[0] == 'rock':
+                    return 'rock', rps.displayRock()
+                else:
+                    return 'paper', rps.displayPaper()
+                
+        else:
+            rock_sum = (
+                self.data["loss"]["rock"][1]
+                + self.data["win"]["rock"][1]
+                + self.data["draw"]["rock"][1]
+            )
+            paper_sum = (
+                self.data["loss"]["paper"][1]
+                + self.data["win"]["paper"][1]
+                + self.data["draw"]["paper"][1]
+            )
+            sissors_sum = (
+                self.data["loss"]["sissors"][1]
+                + self.data["win"]["sissors"][1]
+                + self.data["draw"]["sissors"][1]
+            )
+
+            # Store values in a dictionary for easy identification
+            totals = {
+                "rock": rock_sum,
+                "paper": paper_sum,
+                "sissors": sissors_sum,
+            }
+
+            # Find the maximum value
+            max_value = max(totals.values())
+
+            # Find all categories with the maximum value
+            max_categories = [key for key, value in totals.items() if value == max_value]
+
+            if len(max_categories) == 1:
+                return Game.logic[max_categories[0]], Game.logicDisplay[Game.logic[max_categories[0]]]
             else:
                 return 'sissors', rps.displaySissors()
+
+    def updateUserData(self, player):
+        if self.lastResult != [None, None]:    
+            if self.lastResult[1] == 'w':
+                self.data['win'][self.lastResult[0]][0][Game.ruleNum[player]] += 1
+                self.data['win'][self.lastResult[0]][1] += 1
+            elif self.lastResult[1] == 'l':
+                self.data['loss'][self.lastResult[0]][0][Game.ruleNum[player]] += 1
+                self.data['loss'][self.lastResult[0]][1] += 1
+            elif self.lastResult[1] == 'd':
+                self.data['draw'][self.lastResult[0]][0][Game.ruleNum[player]] += 1
+                self.data['draw'][self.lastResult[0]][1] += 1
             
     def winnerIs(self, computer, player):
-        self.data[Game.rule[player]] += 1  #The predictionData is also getting updated, Because the dictionaries are mutable. Only the reference is been passed to the new variable. 
-        if computer == Game.rule[player]:
-            self.lastResult = [player, 'd']
+        #The predictionData is also getting updated, Because the dictionaries are mutable. Only the reference is been passed to the new variable. 
+        self.updateUserData(player)
+        
+        if computer == player:
+            self.lastResult = [player, 'd'] 
             return 'd'
         else:
-            if Game.logic[Game.rule[player]] == computer:   
-                self.lastResult = [Game.rule[player], 'l']            
+            if Game.logic[player] == computer:   
+                self.lastResult = [player, 'l']            
                 return 'c'
             else:
-                self.lastResult = [Game.rule[player], 'w']
+                self.lastResult = [player, 'w']
                 return 'p'   
             
     
@@ -108,9 +172,10 @@ class Game:
             print("Press X to stop!")
             time.sleep(0.2)
             self.shoot()
-            time.sleep(0.8)
+            time.sleep(0.4)
             cmp, computer = self.computerPlay()
-            # player = msvcrt.getch().decode()
+
+            # player = input("PLAY: ") #msvcrt.getch().decode()   # This is when the Hand tracking is not working and we need user input without letting them enter space on the terminal.
             print(f"Computer Played: \n{computer}")
 
             handRecognition.noteResults = 'now'
@@ -125,7 +190,7 @@ class Game:
                 else:
                     print(f"The final score is Computer: {self.computer} | Player: {self.player}")
                 break
-            print(f"\n You played: {Game.rule[player]}")
+            print(f"\n You played: {player}")
 
             
 
@@ -142,6 +207,8 @@ class Game:
             else:
                 self.trackScore(self.round, 'player')
                 print(f"Player Won! Computer: {self.computer} | Player: {self.player}")
+            
+            time.sleep(1.5)
 
         return (self.data)
 

@@ -1,2 +1,15 @@
+# Initial git commands to push the very first comment
 git initi
 
+git add .
+
+git commit -m "..."
+
+Create a repo on the github website
+
+git remote add origin https://github.com/THE NEW REPO YOU JUST CREATED
+
+git remote -v 
+#Verify the link. 
+
+git push -u origin master

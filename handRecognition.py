@@ -9,9 +9,9 @@ mp_hands = mp.solutions.hands
 stop = 'no'
 noteResults = 'not now'
 result = {
-    'j': 0,
-    'k': 0,
-    'l': 0,
+    'rock': 0,
+    'paper': 0,
+    'sissors': 0,
     'u': 0
 }
 
@@ -64,11 +64,11 @@ def classify_gesture(hand_landmarks):
     
 
     if 0.012 <= thumb_index_dist <= 0.180 and 0.028 <= index_middle_dist <= 0.114 and 0.032 <= middle_ring_dist <= 0.080 and 0.022 <= ring_pinky_dist <= 0.089 and 0.001 <= thumb_tip_middle_pip <= 0.196 and 0.001 <= thumb_tip_middle_dip <= 0.196 and 0.001 <= thumb_tip_index_pip <= 0.146:
-        return 'j', "Closed Fist (Rock)"
+        return 'rock', "Closed Fist (Rock)"
     if 0.026 <= thumb_index_dist <= 0.300 and 0.007 <= index_middle_dist <= 0.131 and 0.001 <= middle_ring_dist <= 0.126 and 0.016 <= ring_pinky_dist <= 0.219:
-        return 'k', "Open Palm (Paper)"
+        return 'paper', "Open Palm (Paper)"
     if 0.017 <= thumb_index_dist <= 0.424 and 0.002 <= index_middle_dist <= 0.337 and 0.019 <= middle_ring_dist <= 0.497 and 0.011 <= ring_pinky_dist <= 0.144 and 0.002 <= thumb_tip_ring_dip <= 0.214 and 0.002 <= ring_dip_mcp <= 0.127 and 0.002 <= pinky_dip_mcp <= 0.144:
-        return 'l', "Peace Sign (Sissors)"
+        return 'sissors', "Peace Sign (Sissors)"
     
     return 'u', "Unknown Gesture"
 
@@ -93,10 +93,10 @@ def startWebcam():
                     if noteResults == 'now' and res != 'u':
                         result[res] += 1
                     elif noteResults == 'now' and res == 'u':
-                        result = {'j': 0, 'k': 0, 'l': 0, 'u': 1}
+                        result = {'rock': 0, 'paper': 0, 'sissors': 0, 'u': 1}
                         break
                     else:
-                        result = {'j': 0, 'k': 0, 'l': 0, 'u': 0}
+                        result = {'rock': 0, 'paper': 0, 'sissors': 0, 'u': 0}
 
                     cv2.putText(image, gesture, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 

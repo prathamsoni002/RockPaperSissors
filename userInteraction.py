@@ -59,9 +59,21 @@ class UserInterface:
         self.users[userName] = {
             "password" : password,
             "predictionData" : {
-                'rock': 0,
-                'paper': 0,
-                'sissors': 0
+                'loss':{
+                    'rock': [[0, 0, 0], 0],
+                    'paper': [[0, 0, 0], 0],
+                    'sissors': [[0, 0, 0], 0]
+                },
+                'win':{
+                    'rock': [[0, 0, 0], 0],
+                    'paper': [[0, 0, 0], 0],
+                    'sissors': [[0, 0, 0], 0]
+                },
+                'draw':{
+                    'rock': [[0, 0, 0], 0],
+                    'paper': [[0, 0, 0], 0],
+                    'sissors': [[0, 0, 0], 0]
+                }
             }
         }
 
